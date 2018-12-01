@@ -21,11 +21,13 @@ batch_size = 128
 n_epochs = 30
 n_train = 60000
 n_test = 10000
+n_features = 784
+n_labels = 10
 
 # Step 1: Read in data
 mnist_folder = 'data/mnist'
 utils.download_mnist(mnist_folder)
-train, val, test = utils.read_mnist(mnist_folder, flatten=True)
+train, val, test = utils.read_mnist(mnist_folder, flatten=True) 
 
 # Step 2: Create datasets and iterator
 # create training Dataset and batch it
@@ -38,7 +40,9 @@ test_data = None
 #############################
 ########## TO DO ############
 #############################
-
+test_data = tf.data.Dataset.from_tensor_slices(test)
+test_data = test_data.shuffle(10000)
+test_data = test_data.batch(batch_size)
 
 # create one iterator and initialize it with different datasets
 iterator = tf.data.Iterator.from_structure(train_data.output_types, 
@@ -57,7 +61,10 @@ w, b = None, None
 #############################
 ########## TO DO ############
 #############################
-
+# w = tf.random_normal([train[0].shape[1], train[1].shape[1]], stddev=0.01)
+w_shape = [train[0].shape[1], train[1].shape[1]]
+w = tf.get_variable("w", initializer=tf.random_normal([n_features, n_labels], stddev=0.01))
+b = tf.get_variable("b", initializer=tf.zeros([1, n_labels]))
 
 # Step 4: build model
 # the model that returns the logits.
@@ -66,7 +73,8 @@ logits = None
 #############################
 ########## TO DO ############
 #############################
-
+h = tf.matmul(img, w) + b 
+logits = tf.nn.sigmoid(h)
 
 # Step 5: define loss function
 # use cross entropy of softmax of logits as the loss function
@@ -74,7 +82,7 @@ loss = None
 #############################
 ########## TO DO ############
 #############################
-
+loss = tf.losses.softmax_cross_entropy(label, logits)
 
 # Step 6: define optimizer
 # using Adamn Optimizer with pre-defined learning rate to minimize loss
@@ -82,7 +90,7 @@ optimizer = None
 #############################
 ########## TO DO ############
 #############################
-
+optimizer = tf.train.AdamOptimizer().minimize(loss)
 
 # Step 7: calculate accuracy with test set
 preds = tf.nn.softmax(logits)
