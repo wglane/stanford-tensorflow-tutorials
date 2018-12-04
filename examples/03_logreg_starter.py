@@ -21,6 +21,8 @@ batch_size = 128
 n_epochs = 30
 n_train = 60000
 n_test = 10000
+
+# Known a priori (in lecture notes)
 n_features = 784
 n_labels = 10
 
@@ -90,7 +92,7 @@ optimizer = None
 #############################
 ########## TO DO ############
 #############################
-optimizer = tf.train.AdamOptimizer().minimize(loss)
+optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss)
 
 # Step 7: calculate accuracy with test set
 preds = tf.nn.softmax(logits)
